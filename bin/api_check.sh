@@ -4,44 +4,48 @@
 
 # start recurrently via: watch -c -n2 ./api_check.sh
 
+# config - input file path with names and urls
+source_file="./conf/services.list"
+
+# config - on this order depends methods "curl_and_next" and "influx_push"
+out_format="%{http_code} %{time_total} %{time_namelookup} %{time_connect} %{time_appconnect} %{time_pretransfer} %{time_redirect} %{time_starttransfer}\n"
+
+
 function influx_push {
-    local res="$1"
-     
-    service_name=`echo $res | awk -F'|' '{ print $1 }' | tr -d ' '`
-    http_code=`echo $res | awk -F'|' '{ print $2 }' | tr -d ' '`
-    time_total=`echo $res | awk -F'|' '{ print $3 }' | tr -d ' '`
+    IFS=' ' read -ra v <<< "$1"
 
-    curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary "http_services_response,host=${service_name} http_code=${http_code},time_total=${time_total}"
+    curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary \
+         "http_response,host=${v[0]} http_code=${v[1]},time_total=${v[2]}"
 }
 
-function print_and_influx {
-    local res="$1"
-
-    echo "$res"
-    echo "$out_row"
-    influx_push "$res"
+function print_and_influx_push {
+    echo "$1"
+    influx_push "$1"
 }
 
-out_head="   SERVICE NAME        | CODE | TIME   |"
-out_row="----------------------------------------"
-echo "$out_row"
-echo "$out_head"
-out_format="%{http_code}  | %{time_total}  |\n"
+function check_config_file {
+    if [ ! -f $source_file ];then
+        echo "File $source_file does not exist. (see example $source_file.dist)"
+        echo "Have you started this script from the project root dir?"
+        exit 1
+    fi
+}
 
 
-# Ping the services
-echo $out_row
-print_and_influx "`curl https://google.com -L -o /dev/null -s -w "Google.com            | $out_format"`"
-echo $out_row
-print_and_influx "`curl https://seznam.cz  -L -o /dev/null -s -w "Seznam.cz             | $out_format"`"
-echo $out_row
+function curl_and_next {
+    IFS=' ' read -ra ADDR <<< "$1"
+    
+    print_and_influx_push "`curl ${ADDR[1]} -L -o /dev/null -s -w "${ADDR[0]} $out_format"`"
+}
+
+function process_webservices {
+    while read p; do
+        curl_and_next "$p"
+    done <$source_file
+}
 
 
-# Full format:
-#out_format="\"%{http_code}\"  | \"%{time_total}\" |  | \"%{time_namelookup}\"  | \"%{time_connect}\"   | \"%{time_appconnect}\"      | \"%{time_pretransfer}\"       | \"%{time_redirect}\"    | \"%{time_starttransfer}\"         |\n\""
-#out_head="   SERVICE NAME        | CODE | TIME  |  | LOOKUP | CONNECT | APPCONNECT | PRETRANSFER | REDIRECT | STARTTRANSFER |"
-# Example output (old format):
-# SERVICE NAME           | TIME LOOKUP | TIME CONNECT | TIME APPCONNECT | TIME PRETRANSFER | TIME REDIRECT | TIME STARTTRANSFER | TIME TOTAL
-# ------------------------------------------------------------------------------------------------------------------------------------------
-# service 1              | 0.004       | 0.004        | 0.000           | 0.004            | 0.000         | 0.582              | 0.582
+# main
+check_config_file
+process_webservices
 
