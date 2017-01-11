@@ -4,7 +4,7 @@ Docker compose definition file with `InfluxDB 1.1.1` and `Grafana 4.0.1` plus `b
 ## First time setup
 ### run docker containers
 ```
-$ sudo docker-compose up -d
+sudo docker-compose up -d
 ```
 ### create database
 ```
@@ -17,20 +17,20 @@ vim conf/services.list
 ```
 ### start bash script to collect data
 ```
-./bin/api_check_repeat.sh # watchout this will run in foreground and block the terminal
+./bin/api_check_repeat.sh # watch out this will run in foreground and block the terminal
 ```
 ### check if data are there
 ```
 curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencode "q=SELECT * FROM http_responses"
 ```
-### Open Grafana and setup source, dashboards
-- <http://localhost:3000>
+### Open Grafana and setup Data sources, Dashboard
+- <http://localhost:3000> - admin/admin
 
 
 ## Operate
 
 ### Grafana
-- <http://localhost:3000>  grafana web (login admin/admin)
+- <http://localhost:3000> - grafana web (login admin/admin)
 
 ### InfluxDB CLI
 ```
