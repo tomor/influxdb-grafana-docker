@@ -27,7 +27,7 @@ curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencod
 - <http://localhost:3000> - admin/admin
 
 
-## Operate
+## Basic Operate
 
 ### Grafana
 - <http://localhost:3000> - grafana web (login admin/admin)
@@ -40,3 +40,7 @@ $ sudo docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
 - `./bin/api_check.sh` collects the data once
 - `./bin/api_check_repeat.sh` starts the previous script every 2 seconds
 
+### Advanced operations
+- todo - Where is the data from the InfluxDB container
+- todo - Where are the data from the Grafana (dashboards)
+- todo - How to upgrade image versions without loosing Grafana dashboards and InfluxDB data
