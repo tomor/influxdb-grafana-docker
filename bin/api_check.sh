@@ -3,9 +3,10 @@
 # 2016-11-04
 
 # start recurrently via: watch -c -n2 ./api_check.sh
-
+ 
 # config - input file path with names and urls
 SOURCE_FILE="./conf/services.list"
+SOURCE_FILE_SEP="|"
 
 # config - on this order depends methods "curl_and_next" and "influx_push"
 OUT_FORMAT="%{http_code} %{time_total} %{time_namelookup} %{time_connect} %{time_appconnect} %{time_pretransfer} %{time_redirect} %{time_starttransfer}\n"
@@ -13,9 +14,9 @@ OUT_FORMAT="%{http_code} %{time_total} %{time_namelookup} %{time_connect} %{time
 
 function influx_push {
     IFS=' ' read -ra v <<< "$1"
-
+    
     curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary \
-         "http_response,host=${v[0]} http_code=${v[1]},time_total=${v[2]}"
+         "http_responses,host=${v[0]} http_code=${v[1]},time_total=${v[2]},time_namelookup=${v[3]},time_connect=${v[4]},time_appconnect=${v[5]},time_pretransfer=${v[6]},time_redirect=${v[7]},time_settransfer=${v[8]}"
 }
 
 function print_and_influx_push {
@@ -31,9 +32,8 @@ function check_config_file {
     fi
 }
 
-
 function curl_and_next {
-    IFS=' ' read -ra ADDR <<< "$1"
+    IFS=$SOURCE_FILE_SEP read -ra ADDR <<< "$1"
     
     print_and_influx_push "`curl ${ADDR[1]} -L -o /dev/null -s -w "${ADDR[0]} $OUT_FORMAT"`"
 }
