@@ -5,10 +5,10 @@
 # start recurrently via: watch -c -n2 ./api_check.sh
 
 # config - input file path with names and urls
-source_file="./conf/services.list"
+SOURCE_FILE="./conf/services.list"
 
 # config - on this order depends methods "curl_and_next" and "influx_push"
-out_format="%{http_code} %{time_total} %{time_namelookup} %{time_connect} %{time_appconnect} %{time_pretransfer} %{time_redirect} %{time_starttransfer}\n"
+OUT_FORMAT="%{http_code} %{time_total} %{time_namelookup} %{time_connect} %{time_appconnect} %{time_pretransfer} %{time_redirect} %{time_starttransfer}\n"
 
 
 function influx_push {
@@ -24,8 +24,8 @@ function print_and_influx_push {
 }
 
 function check_config_file {
-    if [ ! -f $source_file ];then
-        echo "File $source_file does not exist. (see example $source_file.dist)"
+    if [ ! -f $SOURCE_FILE ];then
+        echo "File $SOURCE_FILE does not exist. (see example $SOURCE_FILE.dist)"
         echo "Have you started this script from the project root dir?"
         exit 1
     fi
@@ -35,13 +35,13 @@ function check_config_file {
 function curl_and_next {
     IFS=' ' read -ra ADDR <<< "$1"
     
-    print_and_influx_push "`curl ${ADDR[1]} -L -o /dev/null -s -w "${ADDR[0]} $out_format"`"
+    print_and_influx_push "`curl ${ADDR[1]} -L -o /dev/null -s -w "${ADDR[0]} $OUT_FORMAT"`"
 }
 
 function process_webservices {
     while read p; do
         curl_and_next "$p"
-    done <$source_file
+    done <$SOURCE_FILE
 }
 
 
