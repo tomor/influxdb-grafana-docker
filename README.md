@@ -40,7 +40,7 @@ $ sudo docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
 - `./bin/api_check.sh` collects the data once
 - `./bin/api_check_repeat.sh` starts the previous script every 2 seconds
 
-### Advanced operations
+## Advanced operations
 - todo - Where is the data from the InfluxDB container
 - todo - Where are the data from the Grafana (dashboards)
 - todo - How to upgrade image versions without loosing Grafana dashboards and InfluxDB data
