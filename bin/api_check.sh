@@ -35,7 +35,7 @@ function check_config_file {
 function curl_and_next {
     IFS=$SOURCE_FILE_SEP read -ra ADDR <<< "$1"
     
-    print_and_influx_push "`curl ${ADDR[1]} -L -o /dev/null -s -w "${ADDR[0]} $OUT_FORMAT"`"
+    print_and_influx_push "`curl ${ADDR[1]} -m 30 -L -o /dev/null -s -w "${ADDR[0]} $OUT_FORMAT"`"
 }
 
 function process_webservices {
