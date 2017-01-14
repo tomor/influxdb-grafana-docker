@@ -17,7 +17,7 @@ vim conf/services.list
 ```
 ### start bash script to collect data
 ```
-./bin/api_check_repeat.sh # watch out this will run in foreground and block the terminal
+./bin/collect_data_loop # it will run in foreground (and block the terminal)
 ```
 ### check if data are there
 ```
@@ -38,8 +38,8 @@ curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencod
 $ sudo docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
 ```
 ### Collect sample data
-- `./bin/api_check.sh` collects the data once
-- `./bin/api_check_repeat.sh` starts the previous script every 2 seconds
+- `./bin/collect_data` collects the data once
+- `./bin/collect_data_loop` starts the previous script every 2 seconds
 
 ## Advanced operations
 - todo - Where is the data from the InfluxDB container

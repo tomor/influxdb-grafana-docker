@@ -1,0 +1,8 @@
+#!/bin/bash
+# Start collect_data recurrently 
+
+while sleep 2; do
+  ./bin/collect_data &
+done
+#watch -c -n2 ./bin/api_check.sh
+
