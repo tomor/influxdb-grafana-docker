@@ -25,6 +25,7 @@ curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencod
 ```
 ### Open Grafana and setup Data sources, Dashboard
 - <http://localhost:3000> - admin/admin
+
 #### Data source
 - Name: not important
 - Default: checked
