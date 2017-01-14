@@ -1,51 +1,139 @@
 #!/bin/bash
-# Basic "ping" script for web services
-# 2016-11-04
+#
+# Curl monitoring script
+# - call urls from configuration file 
+# - write results to InfluxDB
+#
+# You can start it recurrently with: watch -c -n2 ./bin/api_check.sh
 
-# start recurrently via: watch -c -n2 ./api_check.sh
  
-# config - input file path with names and urls
-SOURCE_FILE="./conf/services.list"
-SOURCE_FILE_SEP="|"
+# Conf file with host names which will be "pinged"
+CONF_FILE="./conf/services.list"
+CONF_VAL_SEP="|" # separator of "name" and "host name"
 
-# config - on this order depends methods "curl_and_next" and "influx_push"
-OUT_FORMAT="%{http_code} %{time_total} %{time_namelookup} %{time_connect} %{time_appconnect} %{time_pretransfer} %{time_redirect} %{time_starttransfer}\n"
+# Timeout for curl call in seconds
+CONF_CURL_TIMEOUT=15
 
+# Return format from curl - it's used in influx_write()
+MEASURE_OUT_FORMAT="\
+http_code=%{http_code},\
+time_total=%{time_total},\
+time_namelookup=%{time_namelookup},\
+time_connect=%{time_connect},\
+time_appconnect=%{time_appconnect},\
+time_pretransfer=%{time_pretransfer},\
+time_redirect=%{time_redirect},\
+time_starttransfer=%{time_starttransfer}"
 
-function influx_push {
-    IFS=' ' read -ra v <<< "$1"
-    
-    curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary \
-         "http_responses,host=${v[0]} http_code=${v[1]},time_total=${v[2]},time_namelookup=${v[3]},time_connect=${v[4]},time_appconnect=${v[5]},time_pretransfer=${v[6]},time_redirect=${v[7]},time_settransfer=${v[8]}"
+# Function for printing errors to STDERR
+err() {
+  echo "$@" >&2
 }
 
-function print_and_influx_push {
-    echo "$1"
-    influx_push "$1"
+
+# Writes data into InfluxDB 
+#
+# Global:
+#   None
+# Arguments:
+#   $1 string    Name of measurement (usually host)
+#   $2 string    Values for InfluxDB (in format name1=value,nam2=val2)
+#   $3 timestamp Timestamp of the start of measurement
+# Return:
+#   None
+influx_write() {
+  curl_output=$((curl -sS -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary "http_responses,name=$1 $2 $3") 2>&1)
+  ret=$?
+
+  # check http response code from writing to InfluxDB
+  http_code=$(echo "$curl_output" | head -n 1| cut -d $' ' -f2) 
+
+  # when there is problem with writing to influx, print it out
+  if [[ $ret -ne 0 ]] || [[ "$http_code" -ne 204 ]] ; then
+    err "InfluxDB write error. Curl exit number $ret"
+    echo "$curl_output"
+  fi
 }
 
-function check_config_file {
-    if [ ! -f $SOURCE_FILE ];then
-        echo "File $SOURCE_FILE does not exist. (see example $SOURCE_FILE.dist)"
-        echo "Have you started this script from the project root dir?"
-        exit 1
+
+# Checks if config file exists and is ok.
+# If not prints error to STDERR
+#
+# Global:
+#   $CONF_FILE
+# Arguments:
+#   None
+# Returns:
+#   None
+check_config_file() {
+  if [ ! -f $CONF_FILE ];then
+    err "File $CONF_FILE does not exist. (see example $CONF_FILE.dist)"
+    err "Have you started this script from the project root dir?"
+    exit 1
+  fi
+}
+
+
+# Measures response from the given hostname
+#
+# Globals:
+#   $CONF_CURL_TIMEOUT
+# Arguments:
+#   $1 - url for curl, can contain other curl parameter(s)
+# Returns:
+#   $ret_measure_responses (global variable) - measurements in $MEASURE_OUT_FORMAT
+#   $? - sets exit value from curl command
+measure_responses() {
+  ret_measure_responses=`curl $1 -m $CONF_CURL_TIMEOUT -L -o /dev/null -s -w "$MEASURE_OUT_FORMAT"`
+  return $?
+}
+
+
+# Reads file with services and executes another function to process it
+#
+# Globals:
+#   $CONF_FILE
+#   $CONF_VAL_SEP
+# Arguments:
+#   None
+# Returns:
+#   None
+process_webservices() {
+  while read p; do
+    # read line from file
+    IFS=$CONF_VAL_SEP read -ra line <<< "$p"
+    local name=${line[0]}
+    local curl_params=${line[1]}
+
+    # skip empty and commented out lines
+    if [ -z "$name" ] || [[ ${name:0:1} == "#" ]]; then
+      continue
     fi
+
+    # timestamp just before curl is executed
+    timestamp=$(date +%s)
+
+    measure_responses $curl_params
+    ret=$?
+
+    if [[ "$ret" -ne 0 ]]; then
+      err "Err: curl exit code $ret for input \"$p\""
+
+      # when error happens change values for influx
+      influx_values="$ret_measure_responses,curl_err=$ret"
+    else
+      influx_values="$ret_measure_responses"
+    fi
+
+    printf "Values for influx(%b,%b): %b\n" $name $timestamp $influx_values
+    influx_write "$name" "$influx_values" $timestamp
+
+  done <$CONF_FILE
 }
 
-function curl_and_next {
-    IFS=$SOURCE_FILE_SEP read -ra ADDR <<< "$1"
-    
-    print_and_influx_push "`curl ${ADDR[1]} -m 30 -L -o /dev/null -s -w "${ADDR[0]} $OUT_FORMAT"`"
+
+main() {
+  check_config_file
+  process_webservices
 }
-
-function process_webservices {
-    while read p; do
-        curl_and_next "$p"
-    done <$SOURCE_FILE
-}
-
-
-# main
-check_config_file
-process_webservices
-
+main "$@"

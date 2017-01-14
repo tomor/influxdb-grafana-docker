@@ -10,7 +10,7 @@ sudo docker-compose up -d
 ```
 curl -i -XPOST http://localhost:8086/query --data-urlencode "q=CREATE DATABASE mydb"
 ```
-### configure urls
+### configure urls which will be monitored via curl
 ```
 cp conf/services.list.dist conf/services.list
 vim conf/services.list
@@ -25,6 +25,7 @@ curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencod
 ```
 ### Open Grafana and setup Data sources, Dashboard
 - <http://localhost:3000> - admin/admin
+- TODO write down how to setup sources
 
 
 ## Basic Operate
