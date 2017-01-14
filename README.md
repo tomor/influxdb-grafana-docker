@@ -25,7 +25,23 @@ curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencod
 ```
 ### Open Grafana and setup Data sources, Dashboard
 - <http://localhost:3000> - admin/admin
-- TODO write down how to setup sources
+#### Data source
+- Name: not important
+- Default: checked
+- Type: InfluxDB
+- Url: http://influxdb:8086 (we can use container name thanks to the docker link)
+- Access: Proxy
+- Database: mydb (the name which is in the `collect_data` bash script)
+- User,Password: empty
+#### Dashboard
+- New dashboard: (top left "Home" -> Create New -> Graph)
+- Click "Panel Title" -> Edit 
+- On the Metrics tab setup the query `A`
+ - `select measurement`: "http_responses"
+ - WHERE name = ..select tag value..
+ - `field(value)` = http_code (for example)
+ - ALIAS BY: .. select your name
+ - Group by time interval: >5s
 
 
 ## Basic Operate
