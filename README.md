@@ -33,6 +33,7 @@ curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencod
 - Access: Proxy
 - Database: mydb (the name which is in the `collect_data` bash script)
 - User,Password: empty
+
 #### Dashboard
 - New dashboard: (top left "Home" -> Create New -> Graph)
 - Click "Panel Title" -> Edit 
