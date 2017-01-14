@@ -6,7 +6,9 @@
 #
 # You can start it recurrently with: watch -c -n2 ./bin/api_check.sh
 
- 
+# Name of used InfluxDB database
+CONF_DB_NAME=mydb
+
 # Conf file with host names which will be "pinged"
 CONF_FILE="./conf/services.list"
 CONF_VAL_SEP="|" # separator of "name" and "host name"
@@ -34,15 +36,15 @@ err() {
 # Writes data into InfluxDB 
 #
 # Global:
-#   None
+#   $CONF_DB_NAME
 # Arguments:
 #   $1 string    Name of measurement (usually host)
 #   $2 string    Values for InfluxDB (in format name1=value,nam2=val2)
-#   $3 timestamp Timestamp of the start of measurement
+#   $3 timestamp Timestamp of the start of measurement in nanoseconds
 # Return:
 #   None
 influx_write() {
-  curl_output=$((curl -sS -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary "http_responses,name=$1 $2") 2>&1)
+  curl_output=$((curl -sS -i -XPOST "http://localhost:8086/write?db=$CONF_DB_NAME" --data-binary "http_responses,name=$1 $2 $3") 2>&1)
   ret=$?
 
   # check http response code from writing to InfluxDB
@@ -111,7 +113,7 @@ process_webservices() {
     fi
 
     # timestamp just before curl is executed
-    timestamp=$(date +%s)
+    timestamp=$(date +%s%N)
 
     measure_responses $curl_params
     ret=$?
