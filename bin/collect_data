@@ -69,7 +69,7 @@ influx_write() {
 #   None
 check_config_file() {
   if [ ! -f $CONF_FILE ];then
-    err "File $CONF_FILE does not exist. (see example $CONF_FILE.dist)"
+    err "File $CONF_FILE does not exist. (see example $CONF_FILE.dist and copy it)"
     err "Have you started this script from the project root dir?"
     exit 1
   fi
@@ -83,7 +83,7 @@ check_config_file() {
 # Arguments:
 #   $1 - url for curl, can contain other curl parameter(s)
 # Returns:
-#   $ret_measure_responses (global variable) - measurements in $MEASURE_OUT_FORMAT
+#   $ret_measure_responses (global) - curl measurement in $MEASURE_OUT_FORMAT
 #   $? - sets exit value from curl command
 measure_responses() {
   ret_measure_responses=`curl $1 -m $CONF_CURL_TIMEOUT -L -o /dev/null -s -w "$MEASURE_OUT_FORMAT"`
