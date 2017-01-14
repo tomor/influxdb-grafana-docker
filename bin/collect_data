@@ -42,7 +42,7 @@ err() {
 # Return:
 #   None
 influx_write() {
-  curl_output=$((curl -sS -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary "http_responses,name=$1 $2 $3") 2>&1)
+  curl_output=$((curl -sS -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary "http_responses,name=$1 $2") 2>&1)
   ret=$?
 
   # check http response code from writing to InfluxDB
