@@ -65,7 +65,6 @@ $ sudo docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
  - valid example with header: `Localhost-test|-X POST -H MONITOR:true http://localhost:8080`
  - invalid, due to space in header value: `Localhost-POST|-XPOST -H "MONITOR: true" http://localhost:8080`
 
-## Advanced operations
-- todo - Where is the data from the InfluxDB container, retention strategy
-- todo - Where are the data from the Grafana (dashboards)
-- todo - How to upgrade image versions without loosing Grafana dashboards and InfluxDB data
+## What next?
+- Where are the data from the InfluxDB container, retention strategy, Grafana data?
+- How to upgrade image versions without loosing Grafana dashboards and InfluxDB data
