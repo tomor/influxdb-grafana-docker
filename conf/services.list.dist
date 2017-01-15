@@ -1,2 +1,3 @@
 Google.com|https://google.com
 Seznam.cz|https://seznam.cz
+Localhost-POST|-XPOST http://localhost:8080
