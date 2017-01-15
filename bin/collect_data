@@ -86,7 +86,8 @@ check_config_file() {
 #   $ret_measure_responses (global) - curl measurement in $MEASURE_OUT_FORMAT
 #   $? - sets exit value from curl command
 measure_responses() {
-  ret_measure_responses=`curl $1 -m $CONF_CURL_TIMEOUT -L -o /dev/null -sS -w "$MEASURE_OUT_FORMAT"`
+  #set -x 
+  ret_measure_responses=$(curl $1 -m $CONF_CURL_TIMEOUT -L -o /dev/null -sS -w "$MEASURE_OUT_FORMAT")
   return $?
 }
 
