@@ -60,12 +60,12 @@ $ sudo docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
 - `./bin/collect_data_loop` starts the previous script every 2 seconds
 
 ### ./conf/services.list
-- contains list of urls which will be "curled" in format `<name>|<curl params>`
-- can contain more parameters for curl then just url, but the current implementation of `collect_data` script does not allow usage of spaces in attributes values
+- contains list of urls which will be "curled". Each url on separate line. One line has format: `<name>|<curl params>`
+- `<curl params>` can contain more parameters then just url(eventhought it's enough), but the current implementation of `collect_data` script does not allow usage of spaces in attributes values
  - valid example with header: `Localhost-POST|-XPOST -H MONITOR:true http://localhost:8080`
  - invalid, due to space in header value: `Localhost-POST|-XPOST -H "MONITOR: true" http://localhost:8080`
 
 ## Advanced operations
-- todo - Where is the data from the InfluxDB container
+- todo - Where is the data from the InfluxDB container, retention strategy
 - todo - Where are the data from the Grafana (dashboards)
 - todo - How to upgrade image versions without loosing Grafana dashboards and InfluxDB data
