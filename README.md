@@ -61,6 +61,7 @@ $ sudo docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
 
 ### ./conf/services.list
 - contains list of urls which will be "curled". Each url on separate line. One line has format: `<name>|<curl params>`
+- `<name>` is used when storing the values to InfluxDB as a tag
 - `<curl params>` can contain more parameters then just url (though it's enough), but the current implementation of `collect_data` script does not allow usage of spaces in attributes values
  - valid example with header: `Localhost-test|-X POST -H MONITOR:true http://localhost:8080`
  - invalid, due to space in header value: `Localhost-POST|-XPOST -H "MONITOR: true" http://localhost:8080`

@@ -4,7 +4,7 @@
 # - call urls from configuration file 
 # - write results to InfluxDB
 #
-# You can start it recurrently with: watch -c -n2 ./bin/api_check.sh
+# You can start it recurrently with the `collect_data_loop` script
 
 # Name of used InfluxDB database
 CONF_DB_NAME=mydb
