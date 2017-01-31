@@ -66,6 +66,13 @@ $ sudo docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
  - valid example with header: `Localhost-test|-X POST -H MONITOR:true http://localhost:8080`
  - invalid, due to space in header value: `Localhost-POST|-XPOST -H "MONITOR: true" http://localhost:8080`
 
+## Notes
+
+### Grafana template query with variable
+```
+SELECT mean("time_total") FROM "http_responses" WHERE "name" =~ /^$name_whole$/ AND $timeFilter GROUP BY time($interval), "name" fill(null)
+```
+
 ## What next?
 - Where are the data from the InfluxDB container, retention strategy, Grafana data?
 - How to upgrade image versions without loosing Grafana dashboards and InfluxDB data
