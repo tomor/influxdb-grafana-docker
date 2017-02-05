@@ -1,10 +1,11 @@
 # influxdb-grafana-docker
-Docker compose definition file with `InfluxDB 1.1.1` and `Grafana 4.0.1` plus `bash script` for creation of sample data.
+Simple tool for measuring and visualisation webservices response time and http code - powered by `bash+curl`, `InfluxDB 1.1.1` and `Grafana 4.0.1`. 
+InfluxDB and Grafana are running inside docker containers. Bash script is started localy, which means that you need bash on the host machine.
 
 ## First time setup
 ### run docker containers
 ```
-sudo docker-compose up -d
+docker-compose up -d
 ```
 ### create database
 ```
@@ -53,7 +54,7 @@ curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencod
 
 ### InfluxDB CLI
 ```
-$ sudo docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
+$ docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
 ```
 ### Collect sample data
 - `./bin/collect_data` collects the data once
