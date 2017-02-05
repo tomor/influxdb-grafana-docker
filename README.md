@@ -1,6 +1,7 @@
 # influxdb-grafana-docker
 Simple tool for measuring and visualisation webservices response time and http code - powered by `bash+curl`, `InfluxDB 1.1.1` and `Grafana 4.0.1`. 
 InfluxDB and Grafana are running inside docker containers. Bash script is started localy, which means that you need bash on the host machine.
+![Bash+CURL --> InfluxDB --> Grafana](img/influxdb-grafana-curl.png)
 
 ## First time setup
 ### run docker containers
