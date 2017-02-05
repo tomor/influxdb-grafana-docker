@@ -26,7 +26,7 @@ vim conf/services.list
 ```
 curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencode "q=SELECT * FROM http_responses"
 ```
-### Open Grafana and setup Data sources, Dashboard
+### Open Grafana and setup Data source, create Dashboard
 - <http://localhost:3000> - admin/admin
 
 #### Data source
