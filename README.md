@@ -60,7 +60,7 @@ $ docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
 ```
 ### Collect sample data
 - `./bin/collect_data` collects the data once
-- `./bin/collect_data_loop` starts the previous script every 2 seconds
+- `./bin/collect_data_loop` starts the previous script every 10 seconds
 
 ### ./conf/services.list
 - contains list of urls which will be "curled". Each url on separate line. One line has format: `<name>|<curl params>`
