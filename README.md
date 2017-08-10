@@ -1,5 +1,5 @@
 # influxdb-grafana-docker
-Simple tool for measuring and visualisation webservices response time and http code - powered by `bash+curl`, `InfluxDB 1.1.1` and `Grafana 4.0.1`. 
+Simple tool for measuring and visualisation webservices response time and http code - powered by `bash+curl`, `InfluxDB 1.1.1` and `Grafana 4.0.1`.
 InfluxDB and Grafana are running inside docker containers. Bash script is started localy, which means that you need bash on the host machine.
 
 ![Bash+CURL --> InfluxDB --> Grafana](img/influxdb-grafana-curl.png)
@@ -40,7 +40,7 @@ curl -G 'http://localhost:8086/query' --data-urlencode "db=mydb" --data-urlencod
 
 #### Dashboard
 - New dashboard: (top left "Home" -> Create New -> Graph)
-- Click "Panel Title" -> Edit 
+- Click "Panel Title" -> Edit
 - On the Metrics tab setup the query `A`
  - `select measurement`: "http_responses"
  - WHERE name = ..select tag value..
@@ -72,6 +72,18 @@ $ docker exec -ti influxdbgrafanadocker_influxdb_1 /usr/bin/influx
 ## Notes
 
 ### Grafana template query with variable
+Example how to define a variable in Grafana templating:
+```
+Name: name
+Type: Query
+Data source: my-source
+Query: SHOW TAG VALUES WITH KEY = "name"
+Regex: /.*-Accept$/
+Multivalue: true
+Include All option: true
+```
+
+Example query for a Panel Metrics
 ```
 SELECT mean("time_total") FROM "http_responses" WHERE "name" =~ /^$name_whole$/ AND $timeFilter GROUP BY time($interval), "name" fill(null)
 ```
