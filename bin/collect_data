@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Curl monitoring script
-# - call urls from configuration file 
+# - call urls from configuration file
 # - write results to InfluxDB
 #
 # You can start it recurrently with the `collect_data_loop` script
@@ -19,13 +19,7 @@ CONF_CURL_TIMEOUT=15
 # Return format from curl - it's used in influx_write()
 MEASURE_OUT_FORMAT="\
 http_code=%{http_code},\
-time_total=%{time_total},\
-time_namelookup=%{time_namelookup},\
-time_connect=%{time_connect},\
-time_appconnect=%{time_appconnect},\
-time_pretransfer=%{time_pretransfer},\
-time_redirect=%{time_redirect},\
-time_starttransfer=%{time_starttransfer}"
+time_total=%{time_total}"
 
 # Function for printing errors to STDERR
 err() {
@@ -33,7 +27,7 @@ err() {
 }
 
 
-# Writes data into InfluxDB 
+# Writes data into InfluxDB
 #
 # Global:
 #   $CONF_DB_NAME
@@ -48,7 +42,7 @@ influx_write() {
   ret=$?
 
   # check http response code from writing to InfluxDB
-  http_code=$(echo "$curl_output" | head -n 1| cut -d $' ' -f2) 
+  http_code=$(echo "$curl_output" | head -n 1| cut -d $' ' -f2)
 
   # when there is problem with writing to influx, print it out
   if [[ $ret -ne 0 ]] || [[ "$http_code" -ne 204 ]] ; then
@@ -86,7 +80,7 @@ check_config_file() {
 #   $ret_measure_responses (global) - curl measurement in $MEASURE_OUT_FORMAT
 #   $? - sets exit value from curl command
 measure_responses() {
-  #set -x 
+  #set -x
   ret_measure_responses=$(curl $1 -m $CONF_CURL_TIMEOUT -L -o /dev/null -sS -w "$MEASURE_OUT_FORMAT")
   return $?
 }
